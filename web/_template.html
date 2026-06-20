@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QUORUM — consensus-gated agent</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #121821;
+    --panel-2: #0e141c;
+    --line: #1e2733;
+    --ink: #e6edf3;
+    --muted: #7d8da0;
+    --faint: #4a5868;
+    --pass: #3fb950;
+    --fail: #f4513b;
+    --claim: #e3b341;
+    --accent: #58a6ff;
+    --violet: #bc8cff;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+  body { line-height: 1.5; }
+  a { color: var(--accent); }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  header.hero { border-bottom: 1px solid var(--line); padding-bottom: 22px; margin-bottom: 26px; }
+  .badge { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono);
+           font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+           border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pass); box-shadow: 0 0 8px var(--pass); }
+  h1 { font-size: clamp(30px, 5vw, 46px); margin: 16px 0 6px; letter-spacing: -.02em; font-weight: 700; }
+  h1 .q { color: var(--accent); }
+  .tag { font-family: var(--mono); color: var(--violet); font-size: 13px; letter-spacing: .04em; }
+  .lede { color: var(--muted); max-width: 760px; margin: 14px 0 0; font-size: 16px; }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 22px 0 8px; }
+  button { font-family: var(--sans); font-size: 14px; font-weight: 600; cursor: pointer;
+           border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+           border-radius: 9px; padding: 9px 16px; transition: border-color .15s, background .15s; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #04122b; border-color: var(--accent); }
+  button.primary:hover { filter: brightness(1.08); }
+  button:disabled { opacity: .45; cursor: default; }
+  .speed { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; margin-left: auto; }
+  .speed input { accent-color: var(--accent); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  @media (max-width: 880px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .panel > .head { display: flex; align-items: center; justify-content: space-between;
+                   padding: 13px 16px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
+  .panel > .head .title { font-weight: 700; font-size: 14px; letter-spacing: .02em; }
+  .panel > .head .sub { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .pill { font-family: var(--mono); font-size: 11px; padding: 3px 9px; border-radius: 999px;
+          border: 1px solid var(--line); color: var(--muted); }
+  .pill.on { color: var(--pass); border-color: color-mix(in oklab, var(--pass) 50%, var(--line)); }
+  .pill.off { color: var(--fail); border-color: color-mix(in oklab, var(--fail) 50%, var(--line)); }
+
+  .feed { height: 540px; overflow-y: auto; padding: 10px 14px; font-family: var(--mono); font-size: 12.5px; }
+  .feed::-webkit-scrollbar { width: 9px; }
+  .feed::-webkit-scrollbar-thumb { background: var(--line); border-radius: 9px; }
+
+  .ev { margin: 2px 0; white-space: pre-wrap; word-break: break-word; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  .step { margin-top: 16px; color: var(--accent); font-weight: 700; }
+  .step .tool { color: var(--violet); }
+  .step .attempt { color: var(--claim); }
+  .thought { color: var(--faint); padding-left: 2px; }
+  .claim { color: var(--claim); padding-left: 2px; }
+  .vote { padding-left: 18px; }
+  .vote .pass { color: var(--pass); font-weight: 700; }
+  .vote .fail { color: var(--fail); font-weight: 700; }
+  .vote .ev { color: var(--faint); display: inline; }
+  .vote.flag { color: var(--faint); }
+  .gate { font-weight: 700; padding-left: 2px; }
+  .gate.pass { color: var(--pass); }
+  .gate.fail { color: var(--fail); }
+  .root { color: var(--violet); padding-left: 2px; }
+  .commit { color: var(--pass); font-weight: 700; padding-left: 2px; }
+  .rollback { color: var(--fail); font-weight: 700; padding-left: 2px; background: color-mix(in oklab, var(--fail) 12%, transparent);
+              border-radius: 5px; }
+  .replan { color: var(--violet); padding-left: 2px; }
+
+  .tally { display: flex; gap: 18px; padding: 10px 16px; border-top: 1px solid var(--line);
+           background: var(--panel-2); font-family: var(--mono); font-size: 12px; }
+  .tally .k { color: var(--muted); }
+  .tally .pass { color: var(--pass); }
+  .tally .fail { color: var(--fail); }
+  .tally .flag { color: var(--faint); }
+  .tally .poll { color: var(--accent); margin-left: auto; }
+
+  .verdict { margin-top: 26px; }
+  .vcards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 880px) { .vcards { grid-template-columns: 1fr; } }
+  .vcard { border: 1px solid var(--line); border-radius: 14px; padding: 18px; background: var(--panel); }
+  .vcard.fail { border-color: color-mix(in oklab, var(--fail) 45%, var(--line)); }
+  .vcard.pass { border-color: color-mix(in oklab, var(--pass) 45%, var(--line)); }
+  .vcard h3 { margin: 0 0 4px; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .vbig { font-size: 30px; font-weight: 800; letter-spacing: -.01em; }
+  .vcard.fail .vbig { color: var(--fail); }
+  .vcard.pass .vbig { color: var(--pass); }
+  .vmeta { margin-top: 12px; font-family: var(--mono); font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
+  .vmeta b { color: var(--ink); font-weight: 600; }
+
+  .kicker { margin-top: 22px; padding: 16px 18px; border: 1px solid color-mix(in oklab, var(--violet) 40%, var(--line));
+            border-radius: 12px; background: color-mix(in oklab, var(--violet) 8%, transparent); color: var(--ink);
+            font-size: 15px; }
+  .kicker b { color: var(--violet); }
+
+  section.block { margin-top: 40px; }
+  section.block > h2 { font-size: 20px; margin: 0 0 6px; letter-spacing: -.01em; }
+  section.block > p { color: var(--muted); margin: 0 0 16px; max-width: 820px; }
+
+  .chart { border: 1px solid var(--line); border-radius: 14px; padding: 22px; background: var(--panel); }
+  .bar-row { display: grid; grid-template-columns: 110px 1fr 70px; align-items: center; gap: 14px; margin: 12px 0; }
+  .bar-row .lbl { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .bartrack { height: 26px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+  .barfill { height: 100%; border-radius: 6px 0 0 6px; transition: width 1.1s cubic-bezier(.2,.8,.2,1); }
+  .barfill.baseline { background: linear-gradient(90deg, color-mix(in oklab, var(--fail) 80%, #000), var(--fail)); }
+  .barfill.quorum { background: linear-gradient(90deg, color-mix(in oklab, var(--pass) 75%, #000), var(--pass)); }
+  .bar-row .val { font-family: var(--mono); font-weight: 700; text-align: right; }
+  .chart .note { margin-top: 14px; color: var(--faint); font-size: 13px; font-family: var(--mono); }
+
+  .arch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 880px) { .arch { grid-template-columns: 1fr; } }
+  .acard { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: var(--panel); }
+  .acard .n { font-family: var(--mono); color: var(--accent); font-size: 12px; }
+  .acard h4 { margin: 6px 0 6px; font-size: 15px; }
+  .acard p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .acard code { font-family: var(--mono); color: var(--violet); font-size: 12px; }
+
+  footer { margin-top: 50px; border-top: 1px solid var(--line); padding-top: 18px; color: var(--faint);
+           font-size: 13px; font-family: var(--mono); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="badge"><span class="dot"></span> Inference-Time Compute Hackathon 2026 · Agents track</span>
+    <div class="tag">a commit() that blocks on a jury</div>
+    <h1><span class="q">QUORUM</span></h1>
+    <p class="lede">
+      A long-horizon autonomous agent whose every <b>irreversible</b> action must first pass a
+      <b>consensus gate</b> — a swarm of cheap, independent, read-only juror microagents that vote
+      (first-to-ahead-by-K, with red-flag filtering) on whether the action is actually correct.
+      It converts unreliable <b>self</b>-verification into structurally reliable <b>external</b> verification.
+    </p>
+    <div class="controls">
+      <button id="play" class="primary">▶ Run the demo</button>
+      <button id="skip">Skip to verdict</button>
+      <button id="reset" disabled>Reset</button>
+      <label class="speed">speed
+        <input id="speed" type="range" min="1" max="40" value="14" />
+      </label>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="panel" id="baselinePanel">
+      <div class="head">
+        <div><span class="title">Baseline</span> &nbsp;<span class="sub">single agent · gate OFF</span></div>
+        <span class="pill off" id="baselinePill">no gate</span>
+      </div>
+      <div class="feed" id="baselineFeed"></div>
+      <div class="tally"><span class="k">brain self-verifies → ships whatever it builds</span></div>
+    </div>
+
+    <div class="panel" id="quorumPanel">
+      <div class="head">
+        <div><span class="title">QUORUM</span> &nbsp;<span class="sub">consensus gate ON</span></div>
+        <span class="pill on" id="quorumPill">gated</span>
+      </div>
+      <div class="feed" id="quorumFeed"></div>
+      <div class="tally">
+        <span class="k">live tally</span>
+        <span class="pass" id="tPass">PASS 0</span>
+        <span class="fail" id="tFail">FAIL 0</span>
+        <span class="flag" id="tFlag">red-flag 0</span>
+        <span class="poll" id="tPoll">jurors 0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="vcards">
+      <div class="vcard" id="vBaseline">
+        <h3>Baseline — independent oracle</h3>
+        <div class="vbig" id="vbVerdict">—</div>
+        <div class="vmeta" id="vbMeta"></div>
+      </div>
+      <div class="vcard" id="vQuorum">
+        <h3>QUORUM — independent oracle</h3>
+        <div class="vbig" id="vqVerdict">—</div>
+        <div class="vmeta" id="vqMeta"></div>
+      </div>
+    </div>
+    <div class="kicker" id="kicker" style="display:none">
+      ★ <b>The jury overruled the brain</b> on a silent bug the baseline shipped — then rewound time and fixed it, live.
+    </div>
+  </div>
+
+  <section class="block">
+    <h2>Reliability is a compute dial, not a smarter brain</h2>
+    <p>Both stacks run the identical injected faults (a <code>NUMERIC(10,2)→INT</code> money truncation and
+       dropped change-data-capture rows). The baseline's <b>pass^1</b> collapses; QUORUM's stays near 1.0 —
+       and the cost is jurors polled, not model size.</p>
+    <div class="chart" id="chart"></div>
+  </section>
+
+  <section class="block">
+    <h2>How the gate works</h2>
+    <div class="arch">
+      <div class="acard">
+        <div class="n">01 — DECIDER</div>
+        <h4>One single-threaded brain</h4>
+        <p>Claude Opus 4.8 owns every decision (Cognition's "don't build multi-agents"). For each step it emits
+           an action <b>and a checkable claim</b> about the post-state — turning "trust me" into a falsifiable assertion.</p>
+      </div>
+      <div class="acard">
+        <div class="n">02 — CONSENSUS GATE</div>
+        <h4>A jury of read-only jurors</h4>
+        <p>Many parallel Claude Haiku 4.5 jurors see only the state + action + claim — <b>never the brain's reasoning</b>
+           (kills agreement bias). Each runs its own query. <code>red-flag</code> drops junk votes; <code>first-to-ahead-by-K</code>
+           decides — cheap when obvious, more jurors only when uncertain.</p>
+      </div>
+      <div class="acard">
+        <div class="n">03 — RECOVERY</div>
+        <h4>Rewind &amp; re-plan</h4>
+        <p>On FAIL the jurors localize the root cause, the world <b>rolls back to the last good snapshot</b>, and the
+           brain re-plans with the juror evidence in context. The bad commit never compounds.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+/*__DATA__*/
+const DATA = window.__QUORUM__;
+const T = DATA.trace, R = DATA.reliability;
+
+const $ = (id) => document.getElementById(id);
+const baselineFeed = $("baselineFeed"), quorumFeed = $("quorumFeed");
+let timer = null, running = false;
+
+function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function lineFor(e){
+  const p = e.payload;
+  switch(e.kind){
+    case "step_start": {
+      const att = p.attempt > 1 ? ` <span class="attempt">(attempt ${p.attempt})</span>` : "";
+      let h = `<div class="ev step">▶ STEP ${esc(p.step)} <span class="tool">[${esc(p.tool)}]</span>${att}</div>`;
+      if (p.thought) h += `<div class="ev thought">   brain: ${esc(p.thought)}</div>`;
+      return h;
+    }
+    case "claim": return `<div class="ev claim">   claim: ${esc(p.claim)}</div>`;
+    case "vote": {
+      if (p.red_flagged)
+        return `<div class="ev vote flag">     · juror#${p.juror_id} RED-FLAGGED (${esc(p.red_flag_reason)})</div>`;
+      const m = p.vote === "PASS" ? `<span class="pass">PASS</span>` : `<span class="fail">FAIL</span>`;
+      const ev = p.evidence ? `<span class="ev">  ${esc(p.evidence.slice(0,96))}${p.evidence.length>96?"…":""}</span>` : "";
+      return `<div class="ev vote">     · juror#${p.juror_id} ${m}${ev}</div>`;
+    }
+    case "gate_result": {
+      const cls = p.decision === "PASS" ? "pass" : "fail";
+      let h = `<div class="ev gate ${cls}">   ⚖ GATE ${p.decision} (PASS ${p.pass_votes} / FAIL ${p.fail_votes} / red-flag ${p.red_flagged} / polled ${p.jurors_polled})</div>`;
+      if (p.root_cause) h += `<div class="ev root">   root cause: ${esc(p.root_cause)}</div>`;
+      return h;
+    }
+    case "commit": return `<div class="ev commit">   ✅ COMMIT ${esc(p.tool)} (${p.gated ? "gated ✓" : "ungated"})</div>`;
+    case "rollback": return `<div class="ev rollback">   ↩ ROLLBACK ${esc(p.tool)} — rewinding to last good snapshot</div>`;
+    case "replan": return `<div class="ev replan">   ⟳ RE-PLAN with juror evidence</div>`;
+    case "finish": {
+      const r = p.reconciliation;
+      const v = r.passed ? `<span class="gate pass">PASS ✅</span>` : `<span class="gate fail">FAIL ❌</span>`;
+      return `<div class="ev claim">   brain reports: "${esc(p.brain_claim)}"</div>` +
+             `<div class="ev">   INDEPENDENT RECONCILIATION ORACLE → ${v}</div>` +
+             `<div class="ev thought">     missing=${r.n_missing} mismatched=${r.n_mismatched} revenue_delta=${esc(r.revenue_delta)}</div>`;
+    }
+    default: return "";
+  }
+}
+
+// QUORUM live tally
+let tally = { pass:0, fail:0, flag:0, poll:0 };
+function bumpTally(e){
+  if (e.kind === "vote"){
+    tally.poll++;
+    if (e.payload.red_flagged) tally.flag++;
+    else if (e.payload.vote === "PASS") tally.pass++;
+    else if (e.payload.vote === "FAIL") tally.fail++;
+  }
+  if (e.kind === "gate_result"){ tally.pass = 0; tally.fail = 0; } // reset display per gate window after result
+  $("tPass").textContent = `PASS ${tally.pass}`;
+  $("tFail").textContent = `FAIL ${tally.fail}`;
+  $("tFlag").textContent = `red-flag ${tally.flag}`;
+  $("tPoll").textContent = `jurors ${tally.poll}`;
+}
+
+function pushFeed(feed, html){
+  feed.insertAdjacentHTML("beforeend", html);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+// Build a flat playlist that interleaves the two feeds: play the whole baseline first
+// (it dies fast), then the QUORUM run (the long, dramatic one).
+function buildPlaylist(){
+  const pl = [];
+  for (const e of T.runs.baseline.events) pl.push({ feed: "baseline", e });
+  for (const e of T.runs.quorum.events) pl.push({ feed: "quorum", e });
+  return pl;
+}
+
+let playlist = [], idx = 0;
+function speedMs(){ return Math.max(8, 620 - $("speed").value * 15); }
+
+function stepOnce(){
+  if (idx >= playlist.length){ finish(); return; }
+  const { feed, e } = playlist[idx++];
+  const html = lineFor(e);
+  if (feed === "baseline") pushFeed(baselineFeed, html);
+  else { pushFeed(quorumFeed, html); bumpTally(e); }
+  // group consecutive vote lines a touch faster for flow
+  const fast = (e.kind === "vote");
+  timer = setTimeout(stepOnce, fast ? Math.max(6, speedMs()*0.45) : speedMs());
+}
+
+function finish(){
+  running = false;
+  $("play").disabled = false; $("skip").disabled = false; $("reset").disabled = false;
+  renderVerdict();
+}
+
+function renderVerdict(){
+  const b = T.runs.baseline.result, q = T.runs.quorum.result;
+  setCard("vBaseline","vbVerdict","vbMeta", b);
+  setCard("vQuorum","vqVerdict","vqMeta", q);
+  if (!b.reconciliation.passed && q.reconciliation.passed) $("kicker").style.display = "block";
+  renderChart();
+}
+function setCard(card, big, meta, res){
+  const r = res.reconciliation, s = res.stats;
+  const ok = r.passed;
+  $(card).classList.add(ok ? "pass" : "fail");
+  $(card).classList.remove(ok ? "fail" : "pass");
+  $(big).textContent = ok ? "PASS ✅" : "FAIL ❌";
+  $(meta).innerHTML =
+    `<div>missing rows: <b>${r.n_missing}</b> · mismatched: <b>${r.n_mismatched}</b></div>` +
+    `<div>revenue delta: <b>${esc(r.revenue_delta)}</b></div>` +
+    `<div>jurors polled: <b>${s.jurors_polled_total}</b> · red-flagged: <b>${s.votes_red_flagged}</b></div>` +
+    `<div>gate blocks: <b>${s.gate_blocks}</b> · rollbacks: <b>${s.rollbacks}</b></div>` +
+    `<div style="color:var(--faint)">client: ${s.live ? "Claude API (live)" : "offline mock"}</div>`;
+}
+
+let chartDone = false;
+function renderChart(){
+  if (chartDone) return; chartDone = true;
+  const b = R.baseline, q = R.quorum;
+  const html =
+    row("baseline", b.pass_rate, "baseline") +
+    row("quorum", q.pass_rate, "quorum") +
+    `<div class="note">${R.params.trials} trials each · juror noise ${R.params.noise} · red-flag ${R.params.redflag} · K=${R.params.k}` +
+    ` · avg jurors/run: baseline ${b.avg_jurors_polled.toFixed(0)}, QUORUM ${q.avg_jurors_polled.toFixed(0)}</div>`;
+  $("chart").innerHTML = html;
+  requestAnimationFrame(() => {
+    document.querySelectorAll(".barfill").forEach(el => { el.style.width = el.dataset.w; });
+  });
+  function row(label, rate, cls){
+    const pct = Math.round(rate*100);
+    return `<div class="bar-row"><span class="lbl">${label}</span>` +
+           `<div class="bartrack"><div class="barfill ${cls}" data-w="${pct}%" style="width:0"></div></div>` +
+           `<span class="val" style="color:var(--${cls==='baseline'?'fail':'pass'})">${pct}%</span></div>`;
+  }
+}
+
+function reset(){
+  clearTimeout(timer); running = false; idx = 0;
+  tally = { pass:0, fail:0, flag:0, poll:0 };
+  baselineFeed.innerHTML = ""; quorumFeed.innerHTML = "";
+  ["tPass","tFail","tFlag","tPoll"].forEach((id,i)=> $(id).textContent = ["PASS 0","FAIL 0","red-flag 0","jurors 0"][i]);
+  ["vBaseline","vQuorum"].forEach(c => { $(c).classList.remove("pass","fail"); });
+  $("vbVerdict").textContent = "—"; $("vqVerdict").textContent = "—";
+  $("vbMeta").innerHTML = ""; $("vqMeta").innerHTML = ""; $("kicker").style.display = "none";
+  $("play").disabled = false; $("skip").disabled = false; $("reset").disabled = true;
+}
+
+$("play").addEventListener("click", () => {
+  if (running) return;
+  if (idx === 0) playlist = buildPlaylist();
+  running = true; $("play").disabled = true; $("skip").disabled = true; $("reset").disabled = false;
+  stepOnce();
+});
+$("skip").addEventListener("click", () => {
+  clearTimeout(timer);
+  if (idx === 0) playlist = buildPlaylist();
+  // dump the rest instantly
+  while (idx < playlist.length){
+    const { feed, e } = playlist[idx++];
+    const html = lineFor(e);
+    if (feed === "baseline") pushFeed(baselineFeed, html);
+    else { pushFeed(quorumFeed, html); bumpTally(e); }
+  }
+  finish();
+});
+$("reset").addEventListener("click", reset);
+
+// footer stamp
+const live = T.runs.quorum.live;
+$("footer").textContent =
+  `brain = claude-opus-4-8 · jurors = claude-haiku-4-5 · client = ${live ? "live Claude API" : "offline mock fixtures"} · ` +
+  `K = ${T.params.k} · max jurors = ${T.params.max_jurors} · QUORUM v0.1.0`;
+</script>
+</body>
+</html>

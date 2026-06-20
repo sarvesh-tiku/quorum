@@ -1,0 +1,507 @@
+{
+  "baseline": {
+    "label": "baseline",
+    "trials": 40,
+    "pass_rate": 0.0,
+    "n_pass": 0,
+    "avg_jurors_polled": 0.0,
+    "runs": [
+      {
+        "passed": false,
+        "revenue_delta": "-10134.89",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10529.16",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10924.28",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10935.09",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-11170.46",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-8984.09",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-11437.98",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-7794.68",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9608.99",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10522.79",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9429.07",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10562.03",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10163.72",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-8726.31",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10611.28",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-11234.23",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10130.19",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10377.69",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9335.16",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-11644.26",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-7812.52",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-8467.25",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9261.15",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9696.09",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-8738.18",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10901.34",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-11499.67",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10177.83",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9840.89",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9828.86",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-7255.19",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10063.16",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-8298.49",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9714.71",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9648.84",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-12886.40",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10955.28",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-7769.97",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-10786.88",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      },
+      {
+        "passed": false,
+        "revenue_delta": "-9718.96",
+        "jurors_polled": 0,
+        "gate_blocks": 0
+      }
+    ]
+  },
+  "quorum": {
+    "label": "quorum",
+    "trials": 40,
+    "pass_rate": 1.0,
+    "n_pass": 40,
+    "avg_jurors_polled": 49.35,
+    "runs": [
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 60,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 54,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 54,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 54,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 72,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 54,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 66,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 54,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 60,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 54,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 48,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 54,
+        "gate_blocks": 2
+      },
+      {
+        "passed": true,
+        "revenue_delta": "0.00",
+        "jurors_polled": 42,
+        "gate_blocks": 2
+      }
+    ]
+  },
+  "params": {
+    "trials": 40,
+    "k": 3,
+    "max_jurors": 24,
+    "noise": 0.12,
+    "redflag": 0.1
+  }
+}

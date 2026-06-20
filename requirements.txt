@@ -1,0 +1,6 @@
+# QUORUM runs fully offline against the mock Claude client with ZERO dependencies.
+# Install this only if you want a live run against the Claude API (demo/run_demo.py --live).
+anthropic>=0.40
+
+# dev / tests
+pytest>=7

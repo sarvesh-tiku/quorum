@@ -6,6 +6,36 @@
 > actually correct — converting unreliable *self*-verification into structurally reliable
 > *external* verification.
 
+**Now shipped as a Python package.** The runtime is published as
+[`quorum-py`](https://test.pypi.org/project/quorum-py/) — a small,
+framework-agnostic library you can drop in front of any agent's irreversible tools, with
+adapters for the **Claude Agent SDK**, **LangGraph**, and the **OpenAI Agents SDK**. The
+migration story below is the demo that motivated the package.
+
+```bash
+pip install quorum-py                       # core, zero deps, offline
+pip install "quorum-py[live]"               # + Anthropic SDK for live runs
+# or, from TestPyPI today:
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ quorum-py
+```
+
+```python
+from quorum import Gate, GateBlocked, make_client
+
+gate = Gate(make_client(), k=3, max_jurors=8)
+
+@gate.protect(
+    claim="after this call, the file exists with the new contents verbatim",
+    snapshot_state=lambda path, contents: {"path": path, "size": len(contents)},
+    rollback=lambda path, contents: os.unlink(path),
+)
+def write_file(path, contents):
+    open(path, "w").write(contents)
+```
+
+See [`packages/quorum-py/README.md`](packages/quorum-py/README.md) for the full package
+docs (Claude Agent SDK hooks, LangGraph nodes, OpenAI Agents guardrails).
+
 The frontier problem in agents is not capability — it's **reliability over horizon**. Task
 success decays exponentially with the number of dependent steps, because a small per-step
 error rate compounds and errors propagate *silently* (no stack trace, no alert) — and LLMs
@@ -104,20 +134,20 @@ Requires Python 3.10+. The whole loop runs **offline** against a mock Claude cli
 key needed.
 
 ```bash
-# (optional) install the SDK only if you want a live run
-pip install anthropic
+# editable install of the package (also pulls demo deps via dev extras)
+make install                                  # → pip install -e ./packages/quorum-py[dev]
 
 # the side-by-side baseline-vs-QUORUM demo (offline, deterministic)
-python3 demo/run_demo.py
+make demo                                     # → python3 demo/run_demo.py
 
 # slow it down for a live audience / screen-record
-python3 demo/run_demo.py --slow 0.08
+make slow                                     # → python3 demo/run_demo.py --slow 0.08
 
 # the reliability benchmark (the pass^k chart)
-python3 demo/reliability.py --trials 40
+make reliability                              # → python3 demo/reliability.py --trials 40
 
 # tests
-python3 -m pytest tests/ -q
+make test                                     # → python3 -m pytest tests/ -q
 ```
 
 ### The web verification feed
@@ -167,27 +197,42 @@ python3 demo/run_demo.py --live
 
 The architecture mirrors the Claude Agent SDK shape: irreversible tools are **tagged**
 (`quorum/tools.py::IRREVERSIBLE`) so the gate sits exactly where a `PreToolUse` hook would
-intercept and route to the jury; jurors get a read-only query surface (the MCP analogue).
+intercept and route to the jury — and that's exactly what the
+[`quorum.adapters.claude_agent_sdk`](packages/quorum-py/quorum/adapters/claude_agent_sdk.py)
+shim ships. Jurors get a read-only query surface (the MCP analogue).
 
 ---
 
 ## Layout
 
 ```
-quorum/
-  world.py     the snapshot-able migration world + fault injector + reconciliation oracle
-  llm.py       Claude client abstraction: MockClient (offline, evidence-grounded) + LiveClient
-  jurors.py    the juror fleet + ConsensusGate (red-flag filter, first-to-ahead-by-K, root-cause localizer)
-  tools.py     the tool surface the brain drives; which tools are IRREVERSIBLE (gated)
-  brain.py     the single-threaded decider + orchestrator (journal, gate-before-commit, rewind, recovery)
+packages/quorum-py/                 the published library (PyPI: quorum-py)
+  pyproject.toml                    PEP 621 metadata, optional extras: live, dev, claude-agent-sdk, langgraph, openai-agents
+  README.md                         package-level docs
+  CHANGELOG.md
+  quorum/
+    gate.py                         framework-agnostic Gate + @gate.protect + GateBlocked
+    jurors.py                       migration-coupled ConsensusGate (used by the demo)
+    brain.py                        single-threaded decider + orchestrator
+    world.py                        snapshot-able migration world + fault injector + reconciliation oracle
+    tools.py                        which tools are IRREVERSIBLE (gated)
+    llm.py                          Claude client abstraction: MockClient (offline) + LiveClient
+    py.typed                        PEP 561 marker — fully typed
+    adapters/
+      claude_agent_sdk.py           gate_irreversible_tools(...) → PreToolUse hook
+      langgraph.py                  gate_tool(...), make_gate_node(...)
+      openai_agents.py              gate_function_tool(...), make_output_guardrail(...)
+
 demo/
-  run_demo.py      baseline-vs-QUORUM, live terminal feed + JSON trace export
-  reliability.py   the pass^k reliability benchmark
-  build_web.py     bakes the traces into a self-contained web/index.html
+  run_demo.py                       baseline-vs-QUORUM, live terminal feed + JSON trace export
+  reliability.py                    the pass^k reliability benchmark
+  build_web.py                      bakes the traces into a self-contained web/index.html
 tests/
-  test_quorum.py   world, red-flag filter, gate, end-to-end recovery
+  test_quorum.py                    migration end-to-end (world, recovery loop)
+  test_gate.py                      framework-agnostic Gate (no migration deps)
+  test_adapters.py                  Claude Agent SDK / LangGraph / OpenAI Agents adapters
 web/
-  index.html       self-contained live verification-feed UI (open directly)
+  index.html                        self-contained live verification-feed UI (open directly)
 ```
 
 ## Why it's novel

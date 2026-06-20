@@ -3,11 +3,6 @@
 All tests use the MockClient — no network. Run with: python -m pytest -q
 """
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
 from quorum.brain import Orchestrator
 from quorum.jurors import ConsensusGate, red_flag
 from quorum.llm import MockClient, MockConfig

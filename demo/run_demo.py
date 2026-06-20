@@ -16,14 +16,11 @@ import json
 import os
 import sys
 import time
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-from quorum.brain import Event, Orchestrator  # noqa: E402
-from quorum.jurors import ConsensusGate  # noqa: E402
-from quorum.llm import MockClient, MockConfig, make_client  # noqa: E402
-from quorum.world import FaultConfig, MigrationWorld, summary_json  # noqa: E402
+from quorum.brain import Event, Orchestrator
+from quorum.jurors import ConsensusGate
+from quorum.llm import MockClient, MockConfig, make_client
+from quorum.world import FaultConfig, MigrationWorld, summary_json
 
 
 # ANSI colors for the terminal feed.

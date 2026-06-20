@@ -7,3 +7,8 @@ venv/
 *.env
 .hackathon.env
 .DS_Store
+
+# Build artifacts
+*.egg-info/
+build/
+dist/

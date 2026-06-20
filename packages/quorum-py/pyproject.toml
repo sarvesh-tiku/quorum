@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quorum-py"
+version = "0.1.0"
+description = "A commit() that blocks on a jury — consensus-gated irreversible actions for long-horizon agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "QUORUM contributors" }]
+keywords = [
+  "agents", "llm", "claude", "anthropic", "openai", "langgraph",
+  "verification", "consensus", "agentic", "guardrails", "tool-use",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+# Core has zero runtime deps — runs offline against the mock client.
+dependencies = []
+
+[project.optional-dependencies]
+# `pip install quorum-py[live]` to talk to the real Claude API.
+live = ["anthropic>=0.40"]
+# `pip install quorum-py[dev]` for tests + build tooling.
+dev = ["pytest>=7", "build>=1.0"]
+# Adapter "extras" install the host framework alongside the gate.
+claude-agent-sdk = ["claude-agent-sdk>=0.1"]
+langgraph = ["langgraph>=0.2"]
+openai-agents = ["openai-agents>=0.0.6"]
+# Convenience: install everything at once.
+all = [
+  "anthropic>=0.40",
+  "claude-agent-sdk>=0.1",
+  "langgraph>=0.2",
+  "openai-agents>=0.0.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/sarveshtiku-salesforce/quorum"
+Repository = "https://github.com/sarveshtiku-salesforce/quorum"
+Issues = "https://github.com/sarveshtiku-salesforce/quorum/issues"
+Changelog = "https://github.com/sarveshtiku-salesforce/quorum/blob/main/packages/quorum-py/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["quorum*"]
+
+[tool.setuptools.package-data]
+quorum = ["py.typed"]

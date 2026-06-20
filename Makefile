@@ -1,4 +1,8 @@
-.PHONY: demo slow live reliability test web all clean
+.PHONY: install demo slow live reliability test web all clean
+
+# Editable install of the package (Python 3.10+ recommended). One-time setup.
+install:
+	python3 -m pip install -e ./packages/quorum-py[dev]
 
 # Offline, deterministic baseline-vs-QUORUM demo.
 demo:

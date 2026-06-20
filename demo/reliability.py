@@ -12,15 +12,11 @@ cost is a dial (jurors_polled), not model size.
 
 import argparse
 import json
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-from quorum.brain import Orchestrator  # noqa: E402
-from quorum.jurors import ConsensusGate  # noqa: E402
-from quorum.llm import MockClient, MockConfig  # noqa: E402
-from quorum.world import FaultConfig, MigrationWorld  # noqa: E402
+from quorum.brain import Orchestrator
+from quorum.jurors import ConsensusGate
+from quorum.llm import MockClient, MockConfig
+from quorum.world import FaultConfig, MigrationWorld
 
 
 def one_run(gate_enabled: bool, seed: int, k: int, max_jurors: int,

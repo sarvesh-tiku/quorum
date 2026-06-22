@@ -173,40 +173,6 @@ inference (GB200 / the Etched thesis) makes nearly free.
          append to journal           rollback to last good snapshot →
                                      brain re-plans WITH the evidence
 ```
-
----
-
-## The demo: baseline vs QUORUM on a silent DB-migration bug
-
-The motivating task: migrate the `orders` service + Postgres from a legacy to a new
-stack with zero data loss / zero downtime. Stateful, side-effectful, mostly-irreversible
-— the opposite of a coding benchmark, because a bad cast or a dropped row is permanent.
-
-A fault injector introduces two "looks-done" bugs:
-
-- a `NUMERIC(10,2) → INTEGER` cast that silently drops the cents from every order, and
-- 12 dropped change-data-capture rows (writes that landed only on the old DB).
-
-An independent reconciliation oracle (not part of the agent) computes source-vs-target
-row counts + per-row checksums + a revenue total and prints a hard PASS / FAIL.
-
-- **Baseline (gate OFF):** the agent reports "migration complete" — oracle says **FAIL**.
-- **QUORUM (gate ON):** same world, same faults — the jury blocks the bad commit with execution-grounded evidence, the jurors localize the root cause, the brain rewinds + re-plans, retry passes — oracle says **PASS**.
-
-```
-  BASELINE → FAIL ❌   missing=20 mismatched=859 revenue_delta=-10317.60
-  QUORUM   → PASS ✅   missing=0  mismatched=0   revenue_delta=0.00
-            jurors_polled=48 red_flagged=5 gate_blocks=2 rollbacks=2
-```
-
-And the reliability curve QUORUM is designed to flatten (the τ-bench `pass^k` story):
-
-```
-  baseline   |                                        | 0%
-  quorum     |████████████████████████████████████████| 100%
-       (40 trials each, faults ON, juror noise 12%, red-flag 10%, K=3)
-```
-
 ---
 
 ## Run it
@@ -259,28 +225,6 @@ python3 demo/run_demo.py --live
 - **Jurors** = `claude-haiku-4-5`, many cheap parallel read-only calls — *this is the
   volume*, and exactly the workload near-free / near-0-latency inference (GB200) makes
   affordable on every step.
-
----
-
-## What's real, what's mocked, what's the GPU swap-in
-
-| Piece | Status |
-|---|---|
-| Single-threaded brain + decision journal + checkable claims | **Real** (offline + live) |
-| Consensus gate: red-flag filter + first-to-ahead-by-K, parallel jurors | **Real** |
-| Snapshot / rollback + root-cause-localized recovery loop | **Real** |
-| Independent reconciliation oracle (hard PASS/FAIL) | **Real** — not part of the agent |
-| Fault injector (NUMERIC→INT truncation, dropped CDC rows) | **Real** |
-| Reliability benchmark (pass^k curve) | **Real** |
-| Migration "world" | A faithful **in-memory** stand-in for source/target Postgres + live write traffic + CDC — so the loop is offline and deterministic. Every op maps 1:1 to a real migration step. |
-| Claude calls | **Mocked by default** (evidence-grounded fixtures: juror verdicts are computed from the *real* world state in the prompt, so the jury genuinely catches the bug offline). **Live** behind `ANTHROPIC_API_KEY` + `--live`. |
-| Juror fleet on GB200 | **Optional demo-time swap-in.** The `/vote` workload is identical whether served by the Haiku 4.5 API or a vLLM fleet on the GB200 box — only the client changes. The whole value prop *is* "the expensive brain decides; cheap near-infinite compute verifies." |
-
-The architecture mirrors the Claude Agent SDK shape: irreversible tools are **tagged**
-(`quorum/tools.py::IRREVERSIBLE`) so the gate sits exactly where a `PreToolUse` hook would
-intercept and route to the jury — and that's exactly what the
-[`quorum.adapters.claude_agent_sdk`](packages/quorum-py/quorum/adapters/claude_agent_sdk.py)
-shim ships. Jurors get a read-only query surface (the MCP analogue).
 
 ---
 

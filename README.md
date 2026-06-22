@@ -316,14 +316,3 @@ web/
   index.html                        self-contained live verification-feed UI (open directly)
 ```
 
-## Why it's novel
-
-Everyone is trying to make the *brain* more reliable (bigger models, RL, self-correction —
-which the literature shows often backfires). QUORUM's claim is that **long-horizon
-reliability is a property of the verification layer, not the policy** — and that layer is
-the ideal place to spend inference-time compute, because verification is read-only and
-embarrassingly parallel. We take the one method that beat error-compounding (MAKER's
-voting + red-flag) and aim it at the one thing it left unsolved (verifying an open-ended
-plan), inside the one architecture a host (Cognition) endorses, defeating agreement bias
-by hiding the brain's reasoning from the jurors. Nobody has shipped *consensus-gated
-irreversible actions*. That's the primitive: **a `commit()` that blocks on a jury.**

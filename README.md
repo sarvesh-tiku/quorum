@@ -1,4 +1,4 @@
-** QUORUM commit() by consensus**
+# **QUORUM** `commit()` by consensus
 
 Inference-Time Compute Hackathon 2026 · Agents Track. Every irreversible action is verified by a quorum of independent jurors before it executes.
 

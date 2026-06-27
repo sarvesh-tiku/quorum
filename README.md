@@ -1,10 +1,6 @@
 # QUORUM — a `commit()` that blocks on a jury
 
-> **Inference-Time Compute Hackathon 2026 · Agents track.** A long-horizon autonomous
-> agent whose every **irreversible** action must first pass a **consensus gate**: a swarm
-> of cheap, independent, read-only juror microagents that vote on whether the action is
-> actually correct — converting unreliable *self*-verification into structurally reliable
-> *external* verification.
+Inference-Time Compute Hackathon 2026 · Agents Track. Every irreversible action is verified by a quorum of independent jurors before it executes.
 
 ## The package: `quorum-py`
 

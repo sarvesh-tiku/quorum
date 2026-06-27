@@ -1,9 +1,9 @@
-**# QUORUM commit() by consensus
-**
+# QUORUM commit() by consensus
+
 Inference-Time Compute Hackathon 2026 · Agents Track. Every irreversible action is verified by a quorum of independent jurors before it executes.
 
-**## The package: `quorum-py`
-** A lightweight, framework-agnostic Python library that gates every irreversible agent action behind a read-only consensus vote. Independent jurors verify the action before it commits; failed votes trigger rollback.
+## The package: `quorum-py`
+A lightweight, framework-agnostic Python library that gates every irreversible agent action behind a read-only consensus vote. Independent jurors verify the action before it commits; failed votes trigger rollback.
 The runtime is published as [`quorum-py`](https://test.pypi.org/project/quorum-py/) : 
 
 What you get:

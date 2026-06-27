@@ -12,7 +12,7 @@ What you get:
 - **`@gate.protect(...)`** — decorate any callable to run a gate on its post-state.
 - **Adapters** for the **Claude Agent SDK**, **LangGraph**, and the **OpenAI Agents SDK** — thin shims over the same `Gate`. None of them import their host framework, so version drift won't break this package.
 
-### Install
+Install
 
 ```bash
 pip install quorum-py                   # core only, zero deps, offline
@@ -28,7 +28,7 @@ pip install -e ./packages/quorum-py[dev]
 
 Requires Python 3.10+. Fully typed (`py.typed` ships with the wheel).
 
-### Quick start (no framework)
+Quick start (no framework)
 
 ```python
 from quorum import Gate, make_client, GateBlocked
@@ -51,7 +51,7 @@ except GateBlocked as e:
     print(e.result.decision, e.result.root_cause)        # "FAIL" + jury evidence
 ```
 
-### Claude Agent SDK
+Claude Agent SDK
 
 ```python
 from quorum import Gate, make_client
@@ -67,7 +67,7 @@ hooks = gate_irreversible_tools(
 agent = ClaudeAgent(..., hooks=hooks)
 ```
 
-### LangGraph
+LangGraph
 
 ```python
 from quorum import Gate
@@ -93,7 +93,7 @@ safe_write = gate_tool(write_tool, gate,
 )
 ```
 
-### OpenAI Agents SDK
+OpenAI Agents SDK
 
 ```python
 from quorum import Gate

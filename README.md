@@ -226,37 +226,3 @@ python3 demo/run_demo.py --live
   volume*, and exactly the workload near-free / near-0-latency inference (GB200) makes
   affordable on every step.
 
----
-
-## Layout
-
-```
-packages/quorum-py/                 the published library (PyPI: quorum-py)
-  pyproject.toml                    PEP 621 metadata, optional extras: live, dev, claude-agent-sdk, langgraph, openai-agents
-  README.md                         package-level docs
-  CHANGELOG.md
-  quorum/
-    gate.py                         framework-agnostic Gate + @gate.protect + GateBlocked
-    jurors.py                       migration-coupled ConsensusGate (used by the demo)
-    brain.py                        single-threaded decider + orchestrator
-    world.py                        snapshot-able migration world + fault injector + reconciliation oracle
-    tools.py                        which tools are IRREVERSIBLE (gated)
-    llm.py                          Claude client abstraction: MockClient (offline) + LiveClient
-    py.typed                        PEP 561 marker — fully typed
-    adapters/
-      claude_agent_sdk.py           gate_irreversible_tools(...) → PreToolUse hook
-      langgraph.py                  gate_tool(...), make_gate_node(...)
-      openai_agents.py              gate_function_tool(...), make_output_guardrail(...)
-
-demo/
-  run_demo.py                       baseline-vs-QUORUM, live terminal feed + JSON trace export
-  reliability.py                    the pass^k reliability benchmark
-  build_web.py                      bakes the traces into a self-contained web/index.html
-tests/
-  test_quorum.py                    migration end-to-end (world, recovery loop)
-  test_gate.py                      framework-agnostic Gate (no migration deps)
-  test_adapters.py                  Claude Agent SDK / LangGraph / OpenAI Agents adapters
-web/
-  index.html                        self-contained live verification-feed UI (open directly)
-```
-

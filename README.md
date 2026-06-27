@@ -3,12 +3,8 @@
 Inference-Time Compute Hackathon 2026 · Agents Track. Every irreversible action is verified by a quorum of independent jurors before it executes.
 
 **## The package: `quorum-py`
-**
-The runtime is published as [`quorum-py`](https://test.pypi.org/project/quorum-py/) — a
-small, framework-agnostic Python library that wraps the irreversible-tool boundary of any
-LLM agent and runs a read-only consensus gate before each side-effectful action. A swarm
-of cheap juror calls votes on whether the action is correct; the gate either lets it
-through or triggers rollback.
+** A lightweight, framework-agnostic Python library that gates every irreversible agent action behind a read-only consensus vote. Independent jurors verify the action before it commits; failed votes trigger rollback.
+The runtime is published as [`quorum-py`](https://test.pypi.org/project/quorum-py/) : 
 
 What you get:
 
